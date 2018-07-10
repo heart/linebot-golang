@@ -26,6 +26,7 @@ func main() {
 	http.HandleFunc("/webhook", func(w http.ResponseWriter, req *http.Request) {
 
 		//อ่าน Raw Request 
+		//อ่านก่อน  bot.ParseRequest เพราะ bot.ParseRequest เรียก close ให้ body
 		rawBody, err := ioutil.ReadAll(req.Body)
 	    if err != nil {
 	        panic(err)
@@ -33,7 +34,7 @@ func main() {
 
 	    rawbodyString := string(rawBody)
 	    fmt.Println("%s\n\n",rawbodyString)
-		//-----
+		//------------------------------
 
 		events, err := bot.ParseRequest(req)
 		if err != nil {
