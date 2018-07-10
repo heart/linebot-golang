@@ -33,7 +33,14 @@ func main() {
 			return
 		}
 
-		fmt.Println("Webhooked : %s", events)
+		requestDump, err := httputil.DumpRequest(req, true)
+		if err != nil {
+			fmt.Fprint(w, err.Error())
+		} else {
+			fmt.Fprint(w, string(requestDump))
+		}
+
+		//fmt.Println("Webhooked : %s", events)
 
 		for _, event := range events {
 			if event.Type == linebot.EventTypeMessage {
