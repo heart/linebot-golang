@@ -26,11 +26,11 @@ func main() {
 	http.HandleFunc("/webhook", func(w http.ResponseWriter, req *http.Request) {
 
 		//อ่าน Raw Request 
-		body, err := ioutil.ReadAll(req.Body)
+		rawBody, err := ioutil.ReadAll(req.Body)
 	    if err != nil {
 	        panic(err)
 	    }
-	    fmt.Println(string(body))
+	    fmt.Println(string(rawBody))
 		//-----
 
 		events, err := bot.ParseRequest(req)
@@ -47,9 +47,14 @@ func main() {
 			if event.Type == linebot.EventTypeMessage {
 				switch message := event.Message.(type) {
 				case *linebot.TextMessage:
-					if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(message.Text)).Do(); err != nil {
+					/*if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(message.Text)).Do(); err != nil {
+						log.Print(err)
+					}*/
+
+					if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(rawBody)).Do(); err != nil {
 						log.Print(err)
 					}
+					
 				}
 			}
 		}
