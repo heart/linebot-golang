@@ -32,7 +32,7 @@ func main() {
 	    }
 
 	    rawbodyString := string(rawBody)
-	    fmt.Println(rawbodyString)
+	    fmt.Println("%s\n\n",rawbodyString)
 		//-----
 
 		events, err := bot.ParseRequest(req)
@@ -52,7 +52,7 @@ func main() {
 					/*if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(message.Text)).Do(); err != nil {
 						log.Print(err)
 					}*/
-
+					fmt.Println("%s\n\n",message.Text)
 					if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(rawbodyString)).Do(); err != nil {
 						log.Print(err)
 					}
