@@ -2,6 +2,10 @@ package main
 import (
   "net/http"
   "strings"
+  "io/ioutil"
+  "encoding/base64"
+  "crypto/hmac"
+  "crypto/sha256"
 )
 
 func sayHello(w http.ResponseWriter, r *http.Request) {
@@ -11,7 +15,7 @@ func sayHello(w http.ResponseWriter, r *http.Request) {
   w.Write([]byte(message))
 }
 
-func webhook(w http.ResponseWriter, r *http.Request) {
+func webhook(w http.ResponseWriter, req *http.Request) {
 	defer req.Body.Close()
 	body, err := ioutil.ReadAll(req.Body)
 	if err != nil {
