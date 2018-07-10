@@ -24,6 +24,15 @@ func main() {
 	}
 
 	http.HandleFunc("/webhook", func(w http.ResponseWriter, req *http.Request) {
+
+		//อ่าน Raw Request 
+		body, err := ioutil.ReadAll(req.Body)
+	    if err != nil {
+	        panic(err)
+	    }
+	    fmt.Println(string(body))
+		//-----
+
 		events, err := bot.ParseRequest(req)
 		if err != nil {
 			if err == linebot.ErrInvalidSignature {
@@ -33,15 +42,6 @@ func main() {
 			}
 			return
 		}
-
-		//อ่าน Raw Request 
-		body, err := ioutil.ReadAll(req.Body)
-	    if err != nil {
-	        panic(err)
-	    }
-	    fmt.Println(string(body))
-	    //=====
-
 
 		for _, event := range events {
 			if event.Type == linebot.EventTypeMessage {
