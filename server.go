@@ -30,7 +30,9 @@ func main() {
 	    if err != nil {
 	        panic(err)
 	    }
-	    fmt.Println(string(rawBody))
+
+	    rawbodyString := string(rawBody)
+	    fmt.Println(rawbodyString)
 		//-----
 
 		events, err := bot.ParseRequest(req)
@@ -51,10 +53,10 @@ func main() {
 						log.Print(err)
 					}*/
 
-					if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(rawBody)).Do(); err != nil {
+					if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(rawbodyString)).Do(); err != nil {
 						log.Print(err)
 					}
-					
+
 				}
 			}
 		}
