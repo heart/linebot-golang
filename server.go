@@ -6,6 +6,7 @@ import (
 	"os"
 	"fmt"
 	"github.com/line/line-bot-sdk-go/linebot"
+	"net/http/httputil"
 )
 
 type Configuration struct {
