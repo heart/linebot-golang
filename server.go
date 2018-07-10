@@ -1,41 +1,46 @@
 package main
+
 import (
-  "net/http"
-  "strings"
-  "io/ioutil"
-  "encoding/base64"
-  "crypto/hmac"
-  "crypto/sha256"
+	"log"
+	"net/http"
+	"os"
+
+	"github.com/line/line-bot-sdk-go/linebot"
 )
 
-func sayHello(w http.ResponseWriter, r *http.Request) {
-  message := r.URL.Path
-  message = strings.TrimPrefix(message, "/")
-  message = "Hello " + message
-  w.Write([]byte(message))
-}
-
-func webhook(w http.ResponseWriter, req *http.Request) {
-	defer req.Body.Close()
-	body, err := ioutil.ReadAll(req.Body)
-	if err != nil {
-	    // ...
-	}
-	decoded, err := base64.StdEncoding.DecodeString(req.Header.Get("X-Line-Signature"))
-	if err != nil {
-	    // ...
-	}
-	hash := hmac.New(sha256.New, []byte("<channel secret>"))
-	hash.Write(body)
-	// Compare decoded signature and `hash.Sum(nil)` by using `hmac.Equal`
-}
-
 func main() {
-  http.HandleFunc("/", sayHello)
-  http.HandleFunc("/webhook", webhook)
+	bot, err := linebot.New(
+		os.Getenv("CHANNEL_SECRET"),
+		os.Getenv("CHANNEL_TOKEN"),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-  if err := http.ListenAndServe(":8080", nil); err != nil {
-    panic(err)
-  }
+	http.HandleFunc("/webhook", func(w http.ResponseWriter, req *http.Request) {
+		events, err := bot.ParseRequest(req)
+		if err != nil {
+			if err == linebot.ErrInvalidSignature {
+				w.WriteHeader(400)
+			} else {
+				w.WriteHeader(500)
+			}
+			return
+		}
+		for _, event := range events {
+			if event.Type == linebot.EventTypeMessage {
+				switch message := event.Message.(type) {
+				case *linebot.TextMessage:
+					if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(message.Text)).Do(); err != nil {
+						log.Print(err)
+					}
+				}
+			}
+		}
+	})
+	// This is just sample code.
+	// For actual use, you must support HTTPS by using `ListenAndServeTLS`, a reverse proxy or something else.
+	if err := http.ListenAndServe(":8080", nil); err != nil {
+		log.Fatal(err)
+	}
 }
-
