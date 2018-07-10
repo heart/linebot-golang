@@ -4,9 +4,14 @@ import (
 	"log"
 	"net/http"
 	"os"
-
+	"fmt"
 	"github.com/line/line-bot-sdk-go/linebot"
 )
+
+type Configuration struct {
+	Port              int
+	Connection_String string
+}
 
 func main() {
 	bot, err := linebot.New(
@@ -27,6 +32,9 @@ func main() {
 			}
 			return
 		}
+
+		fmt.Println("Webhooked : %s", events)
+
 		for _, event := range events {
 			if event.Type == linebot.EventTypeMessage {
 				switch message := event.Message.(type) {
