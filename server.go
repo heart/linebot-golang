@@ -39,7 +39,7 @@ func main() {
 	    if err != nil {
 	        panic(err)
 	    }
-	    log.Println(string(body))
+	    fmt.Println(string(body))
 	    //=====
 
 
