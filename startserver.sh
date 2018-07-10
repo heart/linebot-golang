@@ -1,5 +1,7 @@
+#!/bin/sh
+
 export GOPATH=$(pwd)
 
-../botconfig/env.sh
+./../botconfig/env.sh
 
 go run server.go
