@@ -44,10 +44,10 @@ func main() {
 	downloadedFileServer := http.FileServer(http.Dir(app.downloadDir))
 	http.HandleFunc("/downloaded/", http.StripPrefix("/downloaded/", downloadedFileServer).ServeHTTP)
 
-	http.HandleFunc("/callback", app.Callback)
+	http.HandleFunc("/webhook", app.Callback)
 	// This is just a sample code.
 	// For actually use, you must support HTTPS by using `ListenAndServeTLS`, reverse proxy or etc.
-	if err := http.ListenAndServe(":"+os.Getenv("PORT"), nil); err != nil {
+	if err := http.ListenAndServe(":8080" , nil); err != nil {
 		log.Fatal(err)
 	}
 }
