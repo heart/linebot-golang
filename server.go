@@ -25,17 +25,6 @@ func main() {
 
 	http.HandleFunc("/webhook", func(w http.ResponseWriter, req *http.Request) {
 
-		//อ่าน Raw Request 
-		//อ่านก่อน  bot.ParseRequest เพราะ bot.ParseRequest เรียก close ให้ body
-		rawBody, err := ioutil.ReadAll(req.Body)
-	    if err != nil {
-	        panic(err)
-	    }
-
-	    rawbodyString := string(rawBody)
-	    fmt.Println("%s\n\n",rawbodyString)
-		//------------------------------
-
 		events, err := bot.ParseRequest(req)
 		if err != nil {
 			if err == linebot.ErrInvalidSignature {
@@ -50,14 +39,9 @@ func main() {
 			if event.Type == linebot.EventTypeMessage {
 				switch message := event.Message.(type) {
 				case *linebot.TextMessage:
-					/*if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(message.Text)).Do(); err != nil {
-						log.Print(err)
-					}*/
-					fmt.Println("%s\n\n",message.Text)
-					if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(rawbodyString)).Do(); err != nil {
+					if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(message.Text)).Do(); err != nil {
 						log.Print(err)
 					}
-
 				}
 			}
 		}
