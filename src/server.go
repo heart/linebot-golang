@@ -24,7 +24,9 @@ import (
 	"os/exec"
 	"path/filepath"
 
+	"image/jpeg"
 	"github.com/line/line-bot-sdk-go/linebot"
+	"gopkg.in/bieber/barcode.v0"
 )
 
 func main() {
@@ -597,6 +599,37 @@ func (app *KitchenSink) handleImage(message *linebot.ImageMessage, replyToken st
 
 		originalContentURL := app.appBaseURL + "/downloaded/" + filepath.Base(originalContent.Name())
 		previewImageURL := app.appBaseURL + "/downloaded/" + filepath.Base(previewImagePath)
+		
+		//====BAR CODE READ====
+		fin, _ := os.Open(previewImagePath)
+		defer fin.Close()
+		src, _ := jpeg.Decode(fin)
+
+		img := barcode.NewImage(src)
+		scanner := barcode.NewScanner().
+			SetEnabledAll(true)
+
+		symbols, _ := scanner.ScanImage(img)
+		/*
+		for _, s := range symbols {
+			fmt.Println(s.Type.Name(), s.Data, s.Quality, s.Boundary)
+		}*/
+		
+		//มีบาร์โค้ด
+		if( len(symbols) > 0 ){
+			s := symbols[0]
+			msg := fmt.Sprintf("Barcode\nType : %s\nValue : %s", s.Type.Name(), s.Data )
+
+			if _, err := app.bot.ReplyMessage(
+				replyToken,
+				linebot.NewTextMessage(msg),
+			).Do(); err != nil {
+				return err
+			}
+			return nil
+		}
+		//====================
+
 		if _, err := app.bot.ReplyMessage(
 			replyToken,
 			linebot.NewImageMessage(originalContentURL, previewImageURL),
@@ -704,3 +737,4 @@ func (app *KitchenSink) saveContent(content io.ReadCloser) (*os.File, error) {
 	log.Printf("Saved %s", file.Name())
 	return file, nil
 }
+
